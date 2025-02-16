@@ -4,8 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/spf13/cast"
-	"log"
 	"strconv"
 
 	"strings"
@@ -30,7 +28,7 @@ func configureBackend() {
 		component.WithName("room"),
 		component.WithNameFunc(strings.ToLower),
 	)
-	log.Println(cast.ToString(1))
+
 	app.RegisterRemote(room,
 		component.WithName("room"),
 		component.WithNameFunc(strings.ToLower),
@@ -53,7 +51,6 @@ func configureFrontend(port int) {
 		payload []byte,
 		servers map[string]*cluster.Server,
 	) (*cluster.Server, error) {
-		// will return the first server
 		for k := range servers {
 			return servers[k], nil
 		}
@@ -95,7 +92,10 @@ func main() {
 
 	defer app.Shutdown()
 
-	app.RegisterModule(bs, "bindingsStorage")
+	if err := app.RegisterModule(bs, "bindingsStorage"); err != nil {
+		panic(err.Error())
+	}
+
 	if !*isFrontend {
 		configureBackend()
 	} else {
